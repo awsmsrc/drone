@@ -3,6 +3,7 @@
     <script>
       var arDrone = require('ar-drone');
       var dronestream = require('dronestream');
+      var _ = require('underscore');
       var client  = arDrone.createClient();
       var updateSpeed = 500;
       var held = {};
@@ -20,23 +21,21 @@
 
       window.onkeydown = function(e){
           held[e.keyCode] = true;
+          send();
       }
       
       window.onkeyup = function(e){
           held[e.keyCode] = false;
+          send();
       }
       
       var command = function(name){
           return held[keymap[name]] || flase;
       }
-
-      var server = require('http').createServer()
-      server.listen(5555)
-      dronestream.listen(server)
       
-      setInterval(function(){
+      var send = function() {
           var s = updateSpeed/100;
-          var anyCommands = _.reduce(directions, function(memo, on){ return memo ? true : on; }, false);
+          var anyCommands = _.reduce(held, function(memo, on){ return memo ? true : on; }, false);
           
           if (command('flip') && command('left')) return client.animate('flipLeft', 400);
           if (command('flip') && command('right')) return client.animate('flipRight', 400);
@@ -53,10 +52,11 @@
           if (command('takeoff')) client.takeoff();
           
           if (!anyCommands) client.stop();
-      }, updateSpeed);
+      }
 
-      client.on('navdata', console.log);
-      
+      var server = require('http').createServer();
+      server.listen(5555);
+      dronestream.listen(server);
     </script>
     <script src="./node_modules/dronestream/dist/nodecopter-client.js"></script>
   </head>
