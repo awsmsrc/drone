@@ -44,9 +44,7 @@
 
       setInterval(function(){
           var s = updateSpeed/100;
-          
           if (directions.flip) return client.animate('flipLeft', 400);
-          
           if (directions.forward) client.front(s);
           if (directions.backward) client.back(s);
           if (directions.up) client.up(s);
@@ -54,6 +52,8 @@
           if (directions.left) client.counterClockwise(s);
           if (directions.right) client.clockwise(s);
       }, updateSpeed);
+
+      client.on('navdata', console.log);
       
     </script>
     <script src="./node_modules/dronestream/dist/nodecopter-client.js"></script>
