@@ -4,50 +4,37 @@
       var arDrone = require('ar-drone');
       var dronestream = require('dronestream');
       var client  = arDrone.createClient();
+      var updateSpeed = 500;
+      var directions = {
+          forward: false,
+          backward: false,
+          up: false,
+          down: false,
+          left: false,
+          right: false,
+          flip: false
+      };
+      
       client.takeoff();
 
-      var moving = false;
-
       window.onkeydown = function(e){
-        if(moving){
-          return false;
-        }
-        if (e.keyCode == '38') {
-          console.log('forwards')
-          moving = true
-          client.front(0.5)
-          setTimeout(function(){
-            client.stop()
-            moving = false
-          }, 1000)
-        }
-        else if (e.keyCode == '40') {
-          console.log('backwards')
-          moving = true
-          client.back(0.5)
-          setTimeout(function(){
-            client.stop()
-            moving = false
-          }, 1000)
-        }
-        else if (e.keyCode == '37') {
-          console.log('left')
-          moving = true
-          client.counterClockwise(0.5)
-          setTimeout(function(){
-            client.stop()
-            moving = false
-          }, 500)
-        }
-        else if (e.keyCode == '39') {
-          console.log('right')
-          moving = true
-          client.clockwise(0.5)
-          setTimeout(function(){
-            client.stop()
-            moving = false
-          }, 500)
-        }
+        if (e.keyCode == '38') directions.forward = true;
+        if (e.keyCode == '40') directions.backward = true;
+        if (e.keyCode == '37') directions.left = true;
+        if (e.keyCode == '39') directions.right = true;
+        if (e.keyCode == '87') directions.up = true;
+        if (e.keyCode == '83') directions.down = true;
+        if (e.keyCode == '32') directions.flip = true;
+      }
+      
+      window.onkeyup = function(e){
+        if (e.keyCode == '38') directions.forward = false;
+        if (e.keyCode == '40') directions.backward = false;
+        if (e.keyCode == '37') directions.left = false;
+        if (e.keyCode == '39') directions.right = false;
+        if (e.keyCode == '87') directions.up = false;
+        if (e.keyCode == '83') directions.down = false;
+        if (e.keyCode == '32') directions.flip = false;
       }
 
       var server = require('http').createServer()
@@ -55,6 +42,20 @@
       dronestream.listen(server)
 
 
+      setInterval(function(){
+          var s = updateSpeed/100;
+          client.stop()
+          
+          if (directions.flip) return client.animate('flipLeft', 1000);
+          
+          if (directions.forward) client.front(s);
+          if (directions.backward) client.back(s);
+          if (directions.up) client.up(s);
+          if (directions.down) client.down(s);
+          if (directions.left) client.counterClockwise(s);
+          if (directions.right) client.clockwise(s);
+      }, updateSpeed);
+      
     </script>
     <script src="./node_modules/dronestream/dist/nodecopter-client.js"></script>
   </head>
