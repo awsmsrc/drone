@@ -2,6 +2,7 @@
   <head>
     <script>
       var arDrone = require('ar-drone');
+      var dronestream = require('dronestream');
       var client  = arDrone.createClient();
       client.takeoff();
 
@@ -49,10 +50,21 @@
         }
       }
 
+      var server = require('http').createServer()
+      server.listen(5555)
+      dronestream.listen(server)
+
 
     </script>
+    <script src="./node_modules/dronestream/dist/nodecopter-client.js"></script>
   </head>
   <body>
     <h1>Fly</h1> 
+    <div id="droneStream" style="width: 640px; height: 360px">   </div> 
+    <script type="text/javascript" charset="utf-8">
+      new NodecopterStream(document.getElementById("droneStream"), {
+        hostname:'localhost', port:5555
+      });
+    </script>
   </body>
 </html>
