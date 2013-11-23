@@ -44,9 +44,8 @@
 
       setInterval(function(){
           var s = updateSpeed/100;
-          client.stop()
           
-          if (directions.flip) return client.animate('flipLeft', 1000);
+          if (directions.flip) return client.animate('flipLeft', 400);
           
           if (directions.forward) client.front(s);
           if (directions.backward) client.back(s);
