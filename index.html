@@ -5,52 +5,54 @@
       var dronestream = require('dronestream');
       var client  = arDrone.createClient();
       var updateSpeed = 500;
-      var directions = {
-          forward: false,
-          backward: false,
-          up: false,
-          down: false,
-          left: false,
-          right: false,
-          flip: false
+      var held = {};
+      var keymap = {
+          forward: 38,
+          backward: 40,
+          up: 87,
+          down: 83,
+          left: 37,
+          right: 39,
+          flip: 32,
+          land: 76,
+          takeoff: 84
       };
-      
-      client.takeoff();
 
       window.onkeydown = function(e){
-        if (e.keyCode == '38') directions.forward = true;
-        if (e.keyCode == '40') directions.backward = true;
-        if (e.keyCode == '37') directions.left = true;
-        if (e.keyCode == '39') directions.right = true;
-        if (e.keyCode == '87') directions.up = true;
-        if (e.keyCode == '83') directions.down = true;
-        if (e.keyCode == '32') directions.flip = true;
+          held[e.keyCode] = true;
       }
       
       window.onkeyup = function(e){
-        if (e.keyCode == '38') directions.forward = false;
-        if (e.keyCode == '40') directions.backward = false;
-        if (e.keyCode == '37') directions.left = false;
-        if (e.keyCode == '39') directions.right = false;
-        if (e.keyCode == '87') directions.up = false;
-        if (e.keyCode == '83') directions.down = false;
-        if (e.keyCode == '32') directions.flip = false;
+          held[e.keyCode] = false;
+      }
+      
+      var command = function(name){
+          return held[keymap[name]] || flase;
       }
 
       var server = require('http').createServer()
       server.listen(5555)
       dronestream.listen(server)
-
-
+      
       setInterval(function(){
           var s = updateSpeed/100;
-          if (directions.flip) return client.animate('flipLeft', 400);
-          if (directions.forward) client.front(s);
-          if (directions.backward) client.back(s);
-          if (directions.up) client.up(s);
-          if (directions.down) client.down(s);
-          if (directions.left) client.counterClockwise(s);
-          if (directions.right) client.clockwise(s);
+          var anyCommands = _.reduce(directions, function(memo, on){ return memo ? true : on; }, false);
+          
+          if (command('flip') && command('left')) return client.animate('flipLeft', 400);
+          if (command('flip') && command('right')) return client.animate('flipRight', 400);
+          if (command('flip') && command('forward')) return client.animate('flipAhead', 400);
+          if (command('flip') && command('backward')) return client.animate('flipBehind', 400);
+          
+          if (command('forward')) client.front(s);
+          if (command('backward')) client.back(s);
+          if (command('up')) client.up(s);
+          if (command('down')) client.down(s);
+          if (command('left')) client.counterClockwise(s);
+          if (command('right')) client.clockwise(s);
+          if (command('land')) client.land();
+          if (command('takeoff')) client.takeoff();
+          
+          if (!anyCommands) client.stop();
       }, updateSpeed);
 
       client.on('navdata', console.log);
