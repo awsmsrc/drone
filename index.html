@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <script>
+      var arDrone = require('ar-drone');
+      var client  = arDrone.createClient();
+      client.takeoff();
+
+      var moving = false;
+
+      window.onkeydown = function(e){
+        if(moving){
+          return false;
+        }
+        if (e.keyCode == '38') {
+          console.log('forwards')
+          moving = true
+          client.front(0.5)
+          setTimeout(function(){
+            client.stop()
+            moving = false
+          }, 1000)
+        }
+        else if (e.keyCode == '40') {
+          console.log('backwards')
+          moving = true
+          client.back(0.5)
+          setTimeout(function(){
+            client.stop()
+            moving = false
+          }, 1000)
+        }
+        else if (e.keyCode == '37') {
+          console.log('left')
+          moving = true
+          client.counterClockwise(0.5)
+          setTimeout(function(){
+            client.stop()
+            moving = false
+          }, 500)
+        }
+        else if (e.keyCode == '39') {
+          console.log('right')
+          moving = true
+          client.clockwise(0.5)
+          setTimeout(function(){
+            client.stop()
+            moving = false
+          }, 500)
+        }
+      }
+
+
+    </script>
+  </head>
+  <body>
+    <h1>Fly</h1> 
+  </body>
+</html>

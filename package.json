@@ -1,0 +1,7 @@
+{
+  "name": "nw-demo",
+  "main": "index.html",
+  "dependencies": {
+    "ar-drone": "~0.3.0"
+  }
+}
