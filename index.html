@@ -30,7 +30,7 @@
       }
       
       var command = function(name){
-          return held[keymap[name]] || flase;
+          return held[keymap[name]] || false;
       }
       
       var send = function() {
@@ -59,9 +59,14 @@
       dronestream.listen(server);
     </script>
     <script src="./node_modules/dronestream/dist/nodecopter-client.js"></script>
+    <style>
+      body{
+        margin:0;
+        padding:0;
+      }
+    </style>
   </head>
   <body>
-    <h1>Fly</h1> 
     <div id="droneStream" style="width: 640px; height: 360px">   </div> 
     <script type="text/javascript" charset="utf-8">
       new NodecopterStream(document.getElementById("droneStream"), {

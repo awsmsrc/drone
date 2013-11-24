@@ -3,5 +3,13 @@
   "main": "index.html",
   "dependencies": {
     "ar-drone": "~0.3.0"
+  },
+  "window": {
+    "title": "DroneVision",
+    "toolbar": false,
+    "width": 640,
+    "height": 360,
+    "frame": false,
+    "show": true
   }
 }
